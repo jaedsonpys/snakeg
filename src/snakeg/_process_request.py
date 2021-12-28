@@ -15,9 +15,32 @@ class ProcessRequest:
 
         request_http = Formatter(request)
         route_info = self.ROUTES.get(request_http.path)
+
+        # validações padrões para o 
+        # gerenciamento de rotas.
         
         if not route_info:
-            self.build_http_message(404, body='404. Not found')
+            return self.build_http_message(404, body='404. Not found')
+
+        if request_http.method not in route_info.get('methods'):
+            return self.build_http_message(405, body='405. Method Not Allowed')
+
+        # call_function é onde ficará
+        # a resposta da função para determinada
+        # rota e método.
+        # 
+        # por exemplo, a função de uma rota /login
+        # que aceita apenas o método POST
+        # será chamada pelo SnakeG quando
+        # essa rota ("/login") for requisitada
+        # por um cliente. 
+        # 
+        # se a rota não existir, o SnakeG retorna
+        # um erro 404 padrão ou personalizada pelo
+        # usuário do SnakeG (como uma página HTML estilizada).#
+
+        call_function = route_info.get('call')
+
             
     def build_http_message(self, status: int, headers: list=[], body: str = '') -> str:
         """Constrói uma mensagem HTTP
