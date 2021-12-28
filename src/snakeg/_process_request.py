@@ -5,12 +5,12 @@ class ProcessRequest:
     ROUTES = {}
     QUEUE_PROCESS = []
 
-    def process_request(self, request: str) -> None:
+    def process_request(self, request: str) -> [str, bool]:
         """Processa a requisição HTTP
         e retorna uma resposta.
 
         Args:
-            request (str): [description]
+            request (str): A requisição HTTP.
         """
 
         request_http = Formatter(request)
@@ -41,8 +41,12 @@ class ProcessRequest:
 
         call_function = route_info.get('call')
 
-            
-    def build_http_message(self, status: int, headers: list=[], body: str = '') -> str:
+    @staticmethod
+    def build_http_message(
+        status: int,
+        headers: list = [],
+        body: str = ''
+    ) -> str:
         """Constrói uma mensagem HTTP
         com headers, status e body.
 
@@ -61,7 +65,8 @@ class ProcessRequest:
             str: Retorna a mensagem HTTP estruturada.
         """
 
-        pre_message = [f'HTTP/1.1 {status}']
+        pre_message = list()
+        pre_message.append(f'HTTP/1.1 {status}')
 
         # definindo headers na resposta
         pre_message.append(f'Server: SnakeG')
@@ -85,11 +90,9 @@ class ProcessRequest:
 if __name__ == '__main__':
     test = ProcessRequest()
 
-    headers = [('Content-Type', 'text/plain'),
+    header = [('Content-Type', 'text/plain'),
                ('Set-Cookie', 'nft=8374784; auth=dy3hrn'),
                ('Auth', '83iud')]
 
-    response = test.build_http_message(200, headers=headers,
+    response = test.build_http_message(200, headers=header,
                                        body='404. Not found.')
-
-    print(response)
