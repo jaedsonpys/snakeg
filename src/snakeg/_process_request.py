@@ -92,6 +92,4 @@ if __name__ == '__main__':
     response = test.build_http_message(200, headers=headers,
                                        body='404. Not found.')
 
-    test.build_http_message()
-
     print(response)
