@@ -20,7 +20,7 @@ class ProcessRequest:
         try:
             request_http = Formatter(request)
         except InvalidHTTPMessage:
-            return self.build_http_message(400, body='405. Method Not Allowed')
+            return self.build_http_message('400. Bad Request', 400)
 
         route_info = self.ROUTES.get(request_http.path)
 
@@ -28,10 +28,10 @@ class ProcessRequest:
         # gerenciamento de rotas.
         
         if not route_info:
-            return self.build_http_message(404, body='404. Not found')
+            return self.build_http_message('404. Method Not Allowed', 404)
 
         if request_http.method not in route_info.get('methods'):
-            return self.build_http_message(405, body='405. Method Not Allowed')
+            return self.build_http_message('405. Method Not Allowed', 405)
 
         # call_function é onde ficará
         # a resposta da função para determinada
@@ -53,13 +53,13 @@ class ProcessRequest:
         headers = [('Content-Type', 'text/plain')]
         body = call_function()
 
-        return self.build_http_message(200, headers, body=body)
+        return self.build_http_message(body, headers=headers)
 
     @staticmethod
     def build_http_message(
-        status: int,
-        headers: list = None,
-        body: str = ''
+        body: str,
+        status: int = 200,
+        headers: list = None
     ) -> bytes:
         """Constrói uma mensagem HTTP
         com headers, status e body.
