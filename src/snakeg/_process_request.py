@@ -4,9 +4,8 @@ from exceptions import InvalidHTTPMessage
 
 class ProcessRequest:
     ROUTES = {}
-    QUEUE_PROCESS = []
 
-    def process_request(self, request: str) -> [str, bool]:
+    def process_request(self, request: str) -> bytes:
         """Processa a requisição HTTP
         e retorna uma resposta.
 
@@ -105,8 +104,7 @@ if __name__ == '__main__':
     test = ProcessRequest()
 
     header = [('Content-Type', 'text/plain'),
-               ('Set-Cookie', 'nft=8374784; auth=dy3hrn'),
-               ('Auth', '83iud')]
+              ('Set-Cookie', 'nft=8374784; auth=dy3hrn'),
+              ('Auth', '83iud')]
 
-    response = test.build_http_message(200, headers=header,
-                                       body='404. Not found.')
+    response = test.build_http_message('405. Method Not Allowed', 405, headers=header)
