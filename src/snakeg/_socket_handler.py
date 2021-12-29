@@ -45,7 +45,7 @@ class SocketHandler:
                 raise err
 
     @staticmethod
-    def send_response(sock_client: socket.SocketType, msg: str) -> None:
+    def send_response(sock_client: socket.SocketType, msg: bytes) -> None:
         try:
             sock_client.send(msg)
         except BrokenPipeError:
@@ -59,8 +59,7 @@ class SocketHandler:
 
 
 if __name__ == '__main__':
-    teste = SocketHandler()
-    teste.create_socket_server('127.0.0.1', 3040)
+    teste = SocketHandler('127.0.0.1', 3040)
 
     cl_s, http_msg = teste.wait_connection()
     cl_s.close()
