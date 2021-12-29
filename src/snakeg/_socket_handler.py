@@ -52,6 +52,19 @@ class SocketHandler:
             if not err.errno == 107:
                 raise err
 
+    @staticmethod
+    def send_response(sock_client: socket.SocketType, msg: str) -> None:
+        try:
+            sock_client.send(msg)
+        except BrokenPipeError:
+            # se a exceção BrokenPipeError
+            # foi lançada, provavelmene o cliente
+            # fechou a conexão e não pode receber
+            # a resposta.
+            pass
+        finally:
+            sock_client.close()
+
 
 if __name__ == '__main__':
     teste = SocketHandler()
