@@ -1,5 +1,9 @@
 from _format_http import Formatter
 from exceptions import InvalidHTTPMessage
+import json
+
+DEFAULT_HEADER = [['Content-Type', 'text/html'],
+                  ['Server', 'SnakeG']]
 
 
 class ProcessRequest:
@@ -47,12 +51,56 @@ class ProcessRequest:
         # usuário do SnakeG (como uma página HTML estilizada).#
 
         call_function = route_info.get('call')
+        response = call_function()
 
-        # o código abaixo é apenas para testes:
-        headers = [('Content-Type', 'text/plain')]
-        body = call_function()
+        print(response, type(response))
 
-        return self.build_http_message(body, headers=headers)
+        # verificando tipo do retorno de call_function
+
+        if isinstance(response, tuple):
+            # se a resposta da função for uma
+            # tupla, é esperado que o primeiro
+            # elemento seja a resposta, e o segundo
+            # o status.
+
+            # verificar body para
+            # realizar a conversão
+            # para JSON.
+
+            body, status = response
+            response_header = DEFAULT_HEADER
+
+            if isinstance(body, dict):
+                response_header[0][1] = 'application/json'
+                body = json.dumps(body)
+
+            return self.build_http_message(body, status=status, headers=response_header)
+
+        if isinstance(response, dict):
+            # se a resposta da função for apenas
+            # um dicionário, sabemos que não
+            # há um status especificado,
+            # então apenas convertemos o dicionário
+            # para string e alteramos o content-type.
+
+            body = response
+            response_header = DEFAULT_HEADER
+
+            response_header[0][1] = 'application/json'
+            body = json.dumps(body)
+
+            return self.build_http_message(body, headers=response_header)
+
+        if isinstance(response, str):
+            # se a resposta da função for apenas
+            # uma string, sabemos que não
+            # há um status especificado,
+            # então retornamos a string e o código
+            # de status padrão.
+
+            body = response
+            response_header = DEFAULT_HEADER
+            return self.build_http_message(body, headers=response_header)
 
     @staticmethod
     def build_http_message(
@@ -69,13 +117,10 @@ class ProcessRequest:
         status HTTP, possibilitando
         a personalização das páginas.
 
-        Args:
-            status (int): Status da resposta
-            headers (list, optional): Headers da resposta.
-            body (str, optional): Corpo da resposta.
-
-        Returns:
-            str: Retorna a mensagem HTTP estruturada.
+        :param body: Body da resposta.
+        :param status: Código de status HTTP
+        :param headers: Headers da resposta
+        :return: None
         """
 
         pre_message = list()

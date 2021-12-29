@@ -4,11 +4,6 @@ from _socket_handler import SocketHandler
 
 from threading import Thread
 
-# 1. Criar método para receber requisições
-#   HTTP por meio do socket.
-# 
-# 2. Criar método para enviar respostas
-#   HTTP.
 # 
 # 3. Criar método para montar respostas
 #   sem a necessidade de um objeto ser
@@ -104,9 +99,13 @@ class SnakeG(RouteHandler):
 if __name__ == '__main__':
     app = SnakeG()
 
-    def teste():
-        return 'Hello!'
+    def get_user():
+        return {'name': 'Jaedson', 'age': 14}
+
+    def index():
+        return 'Index Route'
 
 
-    app.add_route(teste, '/', methods=['GET'])
+    app.add_route(get_user, '/user', methods=['GET'])
+    app.add_route(index, '/', methods=['GET'])
     app.start('0.0.0.0')
