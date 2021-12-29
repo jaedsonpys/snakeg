@@ -1,16 +1,11 @@
 from exceptions import InvalidHTTPMessage
+from _request import Request
 
 
 class Formatter:
-    def __init__(self, http_message: str) -> None:
+    def __init__(self, http_message: str):
         self._lines = http_message.split('\n')
-
-        self.path = None
-        self.method = None
-        self.http_version = None
-
-        self.cookies = {}
-        self.headers = {}
+        self.request_obj = Request()
 
         self.__format_http()
         self.__format_headers()
@@ -22,9 +17,8 @@ class Formatter:
         except ValueError:
             raise InvalidHTTPMessage
 
-        self.method = method
-        self.path = path
-        self.http_version = http_version
+        self.request_obj.method = method
+        self.request_obj.path = path
 
         # print(f'Method: {method}')
         # print(f'Path: {path}')
@@ -33,28 +27,33 @@ class Formatter:
     def __format_headers(self):
         headers = self._lines[1:]
 
-        for header in headers:
-            header_split = header.split(':')
+        for index, header in enumerate(headers):
+            if header:
+                header_split = header.split(':')
 
-            name = header_split[0]
-            value = header_split[-1].strip()
+                name = header_split[0]
+                value = header_split[-1].strip()
 
-            # print(f'Header Name: {name}')
-            # print(f'Header Value: {value}')
-            
-            self.headers[name] = value
+                # print(f'Header Name: {name}')
+                # print(f'Header Value: {value}')
+
+                self.request_obj.headers[name] = value
+            else:
+                # obtendo o body
+                self.body = header[index + 1:]
+                break
 
     def __format_cookies(self) -> None:
         # obtém todos os cookies
         # e retorna um dicionário.
 
-        cookies = self.headers.get('Cookies')
+        cookies = self.request_obj.headers.get('Cookies')
 
         if not cookies:
             return
 
-        self.cookies = self.__get_value_with_name(cookies)
-        self.headers['Cookies'] = self.cookies
+        self.request_obj.cookies = self.__get_value_with_name(cookies)
+        self.request_obj.headers['Cookies'] = self.request_obj.cookies
 
     @staticmethod
     def __get_value_with_name(content) -> dict:

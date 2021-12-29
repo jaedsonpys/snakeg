@@ -4,12 +4,11 @@ from _socket_handler import SocketHandler
 
 from threading import Thread
 
-# 
-# 3. Criar método para montar respostas
-#   sem a necessidade de um objeto ser
-#   retornado.
-# 
 # 4. Criar método para retornar arquivos.
+#
+# 5. Receber body de requisições.
+#   5.1 Criar classe Request e passar
+#   como argumento para a função da rota.
 
 
 class SnakeG(RouteHandler):
@@ -108,9 +107,17 @@ if __name__ == '__main__':
     def about():
         return 'Test method 404', 404
 
+    def show_info_request(request):
+        info = [request.cookies,
+                request.headers,
+                {'method': request.method, 'path': request.path}]
+
+        return info, 200
+
 
     app.add_route(get_user, '/user', methods=['GET'])
     app.add_route(index, '/', methods=['GET'])
     app.add_route(about, '/about', methods=['GET'])
+    app.add_route(show_info_request, '/request', methods=['GET'])
 
-    app.start('0.0.0.0')
+    app.start('0.0.0.0', 5500)

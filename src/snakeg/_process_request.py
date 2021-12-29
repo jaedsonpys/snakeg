@@ -18,7 +18,7 @@ class ProcessRequest:
         """
 
         try:
-            request_http = Formatter(request)
+            request_http = Formatter(request).request_obj
         except InvalidHTTPMessage:
             return self.build_http_message('400. Bad Request', 400)
 
@@ -28,7 +28,7 @@ class ProcessRequest:
         # gerenciamento de rotas.
         
         if not route_info:
-            return self.build_http_message('404. Method Not Allowed', 404)
+            return self.build_http_message('404. Not found', 404)
 
         if request_http.method not in route_info.get('methods'):
             return self.build_http_message('405. Method Not Allowed', 405)
@@ -45,10 +45,19 @@ class ProcessRequest:
         # 
         # se a rota não existir, o SnakeG retorna
         # um erro 404 padrão ou personalizada pelo
-        # usuário do SnakeG (como uma página HTML estilizada).#
+        # usuário do SnakeG (como uma página HTML estilizada).
+
+        # a subclasse Request de Formatter é
+        # passada como argumento para a função
+        # designada pela rota para que o usuário
+        # possa manipular os dados vindos do cliente.
 
         call_function = route_info.get('call')
-        response = call_function()
+
+        try:
+            response = call_function(request_http)
+        except TypeError:
+            response = call_function()
 
         # verificando tipo do retorno de call_function
 
