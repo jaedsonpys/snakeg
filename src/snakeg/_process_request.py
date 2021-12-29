@@ -1,4 +1,5 @@
 from _format_http import Formatter
+from exceptions import InvalidHTTPMessage
 
 
 class ProcessRequest:
@@ -9,11 +10,18 @@ class ProcessRequest:
         """Processa a requisição HTTP
         e retorna uma resposta.
 
+        Caso a mensagem HTTP seja inválida,
+        a exceção InvalidHTTPMessage é lançada.
+
         Args:
             request (str): A requisição HTTP.
         """
 
-        request_http = Formatter(request)
+        try:
+            request_http = Formatter(request)
+        except InvalidHTTPMessage:
+            return self.build_http_message(400, body='405. Method Not Allowed')
+
         route_info = self.ROUTES.get(request_http.path)
 
         # validações padrões para o 
@@ -50,7 +58,7 @@ class ProcessRequest:
     @staticmethod
     def build_http_message(
         status: int,
-        headers: list = [],
+        headers: list = None,
         body: str = ''
     ) -> bytes:
         """Constrói uma mensagem HTTP

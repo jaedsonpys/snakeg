@@ -1,5 +1,8 @@
+from exceptions import InvalidHTTPMessage
+
+
 class Formatter:
-    def __init__(self, http_message: str) -> list:
+    def __init__(self, http_message: str) -> None:
         self._lines = http_message.split('\n')
 
         self.path = None
@@ -14,7 +17,10 @@ class Formatter:
         self.__format_cookies()
 
     def __format_http(self):
-        method, path, http_version = self._lines[0].split(' ')
+        try:
+            method, path, http_version = self._lines[0].split(' ')
+        except ValueError:
+            raise InvalidHTTPMessage
 
         self.method = method
         self.path = path
@@ -38,7 +44,7 @@ class Formatter:
             
             self.headers[name] = value
 
-    def __format_cookies(self) -> dict:
+    def __format_cookies(self) -> None:
         # obtém todos os cookies
         # e retorna um dicionário.
 
@@ -50,7 +56,8 @@ class Formatter:
         self.cookies = self.__get_value_with_name(cookies)
         self.headers['Cookies'] = self.cookies
 
-    def __get_value_with_name(self, content) -> dict:
+    @staticmethod
+    def __get_value_with_name(content) -> dict:
         # essa função obtém valores de headers
         # que são nesse formato e retorna em
         # um dicionário:
