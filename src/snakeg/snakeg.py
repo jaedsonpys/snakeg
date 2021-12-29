@@ -25,7 +25,7 @@ class SnakeG(RouteHandler):
         self._process_req = ProcessRequest()
         self._process_req.ROUTES = self._routes
 
-        self._sock_handler = SocketHandler()
+        self._sock_handler = SocketHandler
 
     def start(self, host: str = '127.0.0.1', port: int = 5500) -> None:
         """Inicia a aplicação no host e
@@ -55,7 +55,7 @@ class SnakeG(RouteHandler):
         :return: None
         """
 
-        self._sock_handler.create_socket_server(host, port)
+        self._sock_handler = SocketHandler(host, port)
 
         try:
             while True:
