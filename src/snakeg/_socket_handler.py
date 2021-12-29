@@ -7,7 +7,7 @@ class SocketHandler:
         sockets e receber conexões de clientes.
         """
 
-        self.server_s = None
+        self.server_s = socket.SocketType
 
     def create_socket_server(
         self, host: str, port: int
@@ -45,7 +45,12 @@ class SocketHandler:
         :return:
         """
 
-        self.server_s.shutdown(0)
+        try:
+            self.server_s.shutdown(0)
+        except OSError as err:
+            # o OSError esperado é 107
+            if not err.errno == 107:
+                raise err
 
 
 if __name__ == '__main__':
