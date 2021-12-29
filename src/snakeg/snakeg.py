@@ -5,10 +5,7 @@ from _socket_handler import SocketHandler
 from threading import Thread
 
 # 4. Criar método para retornar arquivos.
-#
-# 5. Receber body de requisições.
-#   5.1 Criar classe Request e passar
-#   como argumento para a função da rota.
+# 6. Obter parâmetros da URL
 
 
 class SnakeG(RouteHandler):
