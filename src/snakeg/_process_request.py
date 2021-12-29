@@ -2,9 +2,6 @@ from _format_http import Formatter
 from exceptions import InvalidHTTPMessage
 import json
 
-DEFAULT_HEADER = [['Content-Type', 'text/html'],
-                  ['Server', 'SnakeG']]
-
 
 class ProcessRequest:
     ROUTES = {}
@@ -66,30 +63,28 @@ class ProcessRequest:
             # para JSON.
 
             body, status = response
-            response_header = DEFAULT_HEADER
+            response_header = [['Content-Type', 'text/html']]
 
-            if isinstance(body, dict):
+            if isinstance(body, dict) or isinstance(body, list):
                 response_header[0][1] = 'application/json'
                 body = json.dumps(body)
 
+            print('response header tuple:', response_header)
             return self.build_http_message(body, status=status, headers=response_header)
 
-        if isinstance(response, dict):
+        elif isinstance(response, dict):
             # se a resposta da função for apenas
             # um dicionário, sabemos que não
             # há um status especificado,
             # então apenas convertemos o dicionário
             # para string e alteramos o content-type.
 
-            body = response
-            response_header = DEFAULT_HEADER
-
-            response_header[0][1] = 'application/json'
-            body = json.dumps(body)
+            body = json.dumps(response)
+            response_header = [['Content-Type', 'application/json']]
 
             return self.build_http_message(body, headers=response_header)
 
-        if isinstance(response, str):
+        elif isinstance(response, str):
             # se a resposta da função for apenas
             # uma string, sabemos que não
             # há um status especificado,
@@ -97,7 +92,8 @@ class ProcessRequest:
             # de status padrão.
 
             body = response
-            response_header = DEFAULT_HEADER
+            response_header = [['Content-Type', 'text/html']]
+
             return self.build_http_message(body, headers=response_header)
 
     @staticmethod
