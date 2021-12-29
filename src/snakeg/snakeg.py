@@ -105,7 +105,12 @@ if __name__ == '__main__':
     def index():
         return 'Index Route'
 
+    def about():
+        return 'Test method 404', 404
+
 
     app.add_route(get_user, '/user', methods=['GET'])
     app.add_route(index, '/', methods=['GET'])
+    app.add_route(about, '/about', methods=['GET'])
+
     app.start('0.0.0.0')

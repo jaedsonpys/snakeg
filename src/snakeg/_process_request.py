@@ -69,7 +69,6 @@ class ProcessRequest:
                 response_header[0][1] = 'application/json'
                 body = json.dumps(body)
 
-            print('response header tuple:', response_header)
             return self.build_http_message(body, status=status, headers=response_header)
 
         elif isinstance(response, dict):
