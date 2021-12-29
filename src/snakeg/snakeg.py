@@ -27,7 +27,7 @@ class SnakeG(RouteHandler):
 
         self._sock_handler = SocketHandler()
 
-    def start(self, host: str = '127.0.0.1', port: int = '5500') -> None:
+    def start(self, host: str = '127.0.0.1', port: int = 5500) -> None:
         """Inicia a aplicação no host e
         porta especificado.
 
@@ -109,4 +109,4 @@ if __name__ == '__main__':
 
 
     app.add_route(teste, '/', methods=['GET'])
-    app.start('0.0.0.0', 3000)
+    app.start('0.0.0.0')
