@@ -1,5 +1,5 @@
 class RouteHandler:
-    __routes = {}
+    _routes = {}
 
     @classmethod
     def add_route(cls, func, path: str, methods: list) -> None:
@@ -19,7 +19,7 @@ class RouteHandler:
         """
 
         new_route = {'methods': methods, 'call': func}
-        cls.__routes[path] = new_route
+        cls._routes[path] = new_route
 
 
 if __name__ == '__main__':

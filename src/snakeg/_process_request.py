@@ -41,12 +41,18 @@ class ProcessRequest:
 
         call_function = route_info.get('call')
 
+        # o código abaixo é apenas para testes:
+        headers = [('Content-Type', 'text/plain')]
+        body = call_function()
+
+        return self.build_http_message(200, headers, body=body)
+
     @staticmethod
     def build_http_message(
         status: int,
         headers: list = [],
         body: str = ''
-    ) -> str:
+    ) -> bytes:
         """Constrói uma mensagem HTTP
         com headers, status e body.
 
@@ -84,7 +90,7 @@ class ProcessRequest:
             pre_message.append(body)
 
         http_response_message = '\n'.join(pre_message)
-        return http_response_message
+        return http_response_message.encode()
 
 
 if __name__ == '__main__':
