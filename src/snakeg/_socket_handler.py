@@ -2,14 +2,7 @@ import socket
 
 
 class SocketHandler:
-    def __init__(self) -> None:
-        """SocketHandler permite criar novos
-        sockets e receber conexões de clientes.
-        """
-
-        self.server_s = socket.SocketType
-
-    def create_socket_server(
+    def __init__(
         self, host: str, port: int
     ) -> None:
         """Cria um novo socket
@@ -24,7 +17,6 @@ class SocketHandler:
 
         self.server_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_s.bind(address)
-
         self.server_s.listen(5024)
 
     def wait_connection(self) -> [socket.SocketType, str]:
@@ -46,7 +38,7 @@ class SocketHandler:
         """
 
         try:
-            self.server_s.shutdown(0)
+            self.server_s.close()
         except OSError as err:
             # o OSError esperado é 107
             if not err.errno == 107:
