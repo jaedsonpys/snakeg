@@ -53,8 +53,6 @@ class ProcessRequest:
         call_function = route_info.get('call')
         response = call_function()
 
-        print(response, type(response))
-
         # verificando tipo do retorno de call_function
 
         if isinstance(response, tuple):
