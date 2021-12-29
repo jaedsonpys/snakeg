@@ -25,6 +25,8 @@ class SnakeG(RouteHandler):
         self._process_req = ProcessRequest()
         self._process_req.ROUTES = self._routes
 
+        self._sock_handler = SocketHandler()
+
     def start(self, host: str = '127.0.0.1', port: int = '5500') -> None:
         """Inicia a aplicação no host e
         porta especificado.
@@ -53,12 +55,11 @@ class SnakeG(RouteHandler):
         :return: None
         """
 
-        sock_handler = SocketHandler()
-        sock_handler.create_socket_server(host, port)
+        self._sock_handler.create_socket_server(host, port)
 
         try:
             while True:
-                client_s, message = sock_handler.wait_connection()
+                client_s, message = self._sock_handler.wait_connection()
 
                 # a instrução while abaixo
                 # serve para que a requisição
@@ -69,7 +70,7 @@ class SnakeG(RouteHandler):
                 # quando a condição for falsa, a
                 # requisição será processada normalmente.
 
-                while self._atual_thread == self._thread_limit:
+                while self._atual_thread == self.thread_limit:
                     continue
 
                 process_thread = Thread(target=self._process_request,
@@ -77,7 +78,8 @@ class SnakeG(RouteHandler):
 
                 process_thread.start()
         except KeyboardInterrupt:
-            raise
+            self._sock_handler.close_server()
+            exit()
 
     def _process_request(self, client_s, message) -> None:
         # todas as requisições que chegam são
@@ -92,13 +94,11 @@ class SnakeG(RouteHandler):
 
         try:
             response = self._process_req.process_request(message)
-
-            client_s.send(response)
-            client_s.close()
-
+            self._sock_handler.send_response(client_s, response)
             self._atual_thread -= 1
         except KeyboardInterrupt:
-            raise
+            self._sock_handler.close_server()
+            exit()
 
 
 if __name__ == '__main__':
