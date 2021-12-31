@@ -3,6 +3,56 @@ from exceptions import InvalidHTTPMessage
 import json
 
 
+def build_http_message(
+        body: str,
+        status: int = 200,
+        headers: dict = None,
+        cookies: dict = None
+) -> bytes:
+    """Constrói uma mensagem HTTP
+    com headers, status e body.
+
+    * O argumento body será mudado
+    para receber uma classe que
+    possui as respostas para cada
+    status HTTP, possibilitando
+    a personalização das páginas.
+
+    :param cookies: Cookies
+    :param body: Body da resposta.
+    :param status: Código de status HTTP
+    :param headers: Headers da resposta
+    :return: None
+    """
+
+    pre_message = list()
+    pre_message.append(f'HTTP/1.1 {status}')
+    pre_message.append(f'Server: SnakeG')
+
+    if cookies:
+        cookies_list = []
+        for name, value in cookies.items():
+            cookies_list.append(f'{name}={value}')
+
+        headers['Set-Cookie'] = '; '.join(cookies_list)
+        del cookies_list
+        del cookies
+
+    if headers:
+        for name, value in headers.items():
+            pre_message.append(f'{name}: {value}')
+    else:
+        pre_message.append('Content-Type: text/html')
+
+    # definindo o body
+    if body:
+        pre_message.append('')
+        pre_message.append(body)
+
+    http_response_message = '\n'.join(pre_message)
+    return http_response_message.encode()
+
+
 class ProcessRequest:
     ROUTES = {}
 
@@ -20,7 +70,7 @@ class ProcessRequest:
         try:
             request_http = Formatter(request).request_obj
         except InvalidHTTPMessage:
-            return self.build_http_message('400. Bad Request', 400)
+            return build_http_message('400. Bad Request', 400)
 
         route_info = self.ROUTES.get(request_http.path)
 
@@ -28,10 +78,10 @@ class ProcessRequest:
         # gerenciamento de rotas.
         
         if not route_info:
-            return self.build_http_message('404. Not found', 404)
+            return build_http_message('404. Not found', 404)
 
         if request_http.method not in route_info.get('methods'):
-            return self.build_http_message('405. Method Not Allowed', 405)
+            return build_http_message('405. Method Not Allowed', 405)
 
         # call_function é onde ficará
         # a resposta da função para determinada
@@ -72,13 +122,13 @@ class ProcessRequest:
             # para JSON.
 
             body, status = response
-            response_header = [['Content-Type', 'text/html']]
+            response_header = {'Content-Type': 'text/html'}
 
             if isinstance(body, dict) or isinstance(body, list):
-                response_header[0][1] = 'application/json'
+                response_header['Content-Type'] = 'application/json'
                 body = json.dumps(body)
 
-            return self.build_http_message(body, status=status, headers=response_header)
+            return build_http_message(body, status=status, headers=response_header)
 
         elif isinstance(response, dict):
             # se a resposta da função for apenas
@@ -88,9 +138,9 @@ class ProcessRequest:
             # para string e alteramos o content-type.
 
             body = json.dumps(response)
-            response_header = [['Content-Type', 'application/json']]
+            response_header = {'Content-Type': 'application/json'}
 
-            return self.build_http_message(body, headers=response_header)
+            return build_http_message(body, headers=response_header)
 
         elif isinstance(response, str):
             # se a resposta da função for apenas
@@ -100,60 +150,14 @@ class ProcessRequest:
             # de status padrão.
 
             body = response
-            response_header = [['Content-Type', 'text/html']]
+            response_header = {'Content-Type': 'text/html'}
 
-            return self.build_http_message(body, headers=response_header)
-
-    @staticmethod
-    def build_http_message(
-        body: str,
-        status: int = 200,
-        headers: list = None
-    ) -> bytes:
-        """Constrói uma mensagem HTTP
-        com headers, status e body.
-
-        * O argumento body será mudado
-        para receber uma classe que
-        possui as respostas para cada
-        status HTTP, possibilitando
-        a personalização das páginas.
-
-        :param body: Body da resposta.
-        :param status: Código de status HTTP
-        :param headers: Headers da resposta
-        :return: None
-        """
-
-        pre_message = list()
-        pre_message.append(f'HTTP/1.1 {status}')
-
-        # definindo headers na resposta
-        pre_message.append(f'Server: SnakeG')
-    
-        if headers:
-            for header in headers:
-                name = header[0]
-                value = header[1]
-
-                pre_message.append(f'{name}: {value}')
-        else:
-            pre_message.append('Content-Type: text/html')
-
-        # definindo o body
-        if body:
-            pre_message.append('')
-            pre_message.append(body)
-
-        http_response_message = '\n'.join(pre_message)
-        return http_response_message.encode()
+            return build_http_message(body, headers=response_header)
 
 
 if __name__ == '__main__':
-    test = ProcessRequest()
+    header = {'Content-Type': 'text/html',
+              'Set-Cookie': 'nd=3434'}
 
-    header = [('Content-Type', 'text/plain'),
-              ('Set-Cookie', 'nft=8374784; auth=dy3hrn'),
-              ('Auth', '83iud')]
-
-    response = test.build_http_message('405. Method Not Allowed', 405, headers=header)
+    response = build_http_message('405. Method Not Allowed', 405, headers=header)
+    print(response.decode())
