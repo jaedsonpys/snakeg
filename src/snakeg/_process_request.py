@@ -137,6 +137,8 @@ class ProcessRequest:
                 value = header[1]
 
                 pre_message.append(f'{name}: {value}')
+        else:
+            pre_message.append('Content-Type: text/html')
 
         # definindo o body
         if body:

@@ -10,6 +10,7 @@ class Formatter:
         self.__format_http()
         self.__format_headers()
         self.__format_cookies()
+        self.__format_params()
 
     def __format_http(self):
         try:
@@ -43,6 +44,22 @@ class Formatter:
                 self.body = header[index + 1:]
                 break
 
+    def __format_params(self):
+        # exemplo: /login?user=jaedson&pid=3949
+        path_split = self.request_obj.path.split('?')
+        new_path = path_split[0]
+
+        if len(path_split) < 2:
+            return
+
+        args = path_split[1]
+
+        # definindo novo path
+        self.request_obj.path = new_path
+
+        # obtendo parâmetros da URL
+        self.request_obj.params = self.__get_value_with_name(args, format_args=True)
+
     def __format_cookies(self) -> None:
         # obtém todos os cookies
         # e retorna um dicionário.
@@ -56,7 +73,7 @@ class Formatter:
         self.request_obj.headers['Cookies'] = self.request_obj.cookies
 
     @staticmethod
-    def __get_value_with_name(content) -> dict:
+    def __get_value_with_name(content, format_args=False) -> dict:
         # essa função obtém valores de headers
         # que são nesse formato e retorna em
         # um dicionário:
@@ -64,7 +81,11 @@ class Formatter:
         # timeout=1; cookie=02dSl09
 
         content = content.replace(' ', '')
-        values = content.split(';')
+
+        if format_args:
+            values = content.split('&')
+        else:
+            values = content.split(';')
 
         result = {}
 
@@ -76,11 +97,9 @@ class Formatter:
 
 
 if __name__ == '__main__':
-    app = Formatter('POST /login HTTP/1.1\n'
+    app = Formatter('POST /login?user=jaedson&pid=3949 HTTP/1.1\n'
                     'Host: 127.0.0.1\n'
                     'Connection: keep-alive\n'
                     'Cookies: 1P_JAR=2021-12-27-23; NID=511')
 
-    print(app.headers)
-    print()
-    print(app.cookies)
+    print(app.request_obj.__dict__['params'])

@@ -117,4 +117,4 @@ if __name__ == '__main__':
     app.add_route(about, '/about', methods=['GET'])
     app.add_route(show_info_request, '/request', methods=['GET'])
 
-    app.start('0.0.0.0', 5500)
+    app.start('127.0.0.1', 5500)

@@ -7,3 +7,4 @@ class Request:
 
         self.cookies = {}
         self.headers = {}
+        self.params = {}
