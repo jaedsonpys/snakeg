@@ -5,6 +5,10 @@ class Request:
         self.http_version = None
         self.body = None
 
+        self.host = None
+        self.port = None
+        self.time = None
+
         self.cookies = {}
         self.headers = {}
         self.params = {}

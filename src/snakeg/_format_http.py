@@ -19,12 +19,11 @@ class Formatter:
 
     def __format_http(self):
         try:
-            method, path, http_version = self._lines[0].split(' ')
+            line = self._lines[0].split(' ')
+            self.request_obj.method = line[0]
+            self.request_obj.path = line[1]
         except ValueError:
             raise InvalidHTTPMessage
-
-        self.request_obj.method = method
-        self.request_obj.path = path
 
         # print(f'Method: {method}')
         # print(f'Path: {path}')

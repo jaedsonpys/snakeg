@@ -21,6 +21,7 @@ class Response:
         :param cookies: Cookies da resposta
         """
 
+        self.status = status
         self._response = build_http_message(body, status, headers, cookies)
 
     def __call__(self):

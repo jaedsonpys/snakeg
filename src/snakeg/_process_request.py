@@ -8,6 +8,13 @@ from _environ import get_key
 KEY = get_key()
 
 
+def log_response(
+        status: int, path: str,
+        method: str, host: tuple
+):
+    print(f'    * {method} "{path}" {status} - {host}')
+
+
 def build_http_message(
         body: str,
         status: int = 200,
@@ -65,7 +72,7 @@ def build_http_message(
 class ProcessRequest:
     ROUTES = {}
 
-    def process_request(self, request: str) -> bytes:
+    def process_request(self, request: str, host: tuple) -> bytes:
         """Processa a requisição HTTP
         e retorna uma resposta.
 
@@ -74,6 +81,7 @@ class ProcessRequest:
 
         Args:
             request (str): A requisição HTTP.
+            :param host: Host do par.
         """
 
         try:
@@ -85,11 +93,17 @@ class ProcessRequest:
 
         # validações padrões para o 
         # gerenciamento de rotas.
-        
+
         if not route_info:
+            log_response(404, request_http.path,
+                         request_http.method, host)
+
             return build_http_message('404. Not found', 404)
 
         if request_http.method not in route_info.get('methods'):
+            log_response(405, request_http.path,
+                         request_http.method, host)
+
             return build_http_message('405. Method Not Allowed', 405)
 
         # call_function é onde ficará
@@ -137,6 +151,9 @@ class ProcessRequest:
                 response_header['Content-Type'] = 'application/json'
                 body = json.dumps(body)
 
+            log_response(status, request_http.path,
+                         request_http.method, host)
+
             return build_http_message(body, status=status, headers=response_header)
 
         elif isinstance(response, dict):
@@ -149,6 +166,9 @@ class ProcessRequest:
             body = json.dumps(response)
             response_header = {'Content-Type': 'application/json'}
 
+            log_response(200, request_http.path,
+                         request_http.method, host)
+
             return build_http_message(body, headers=response_header)
 
         elif isinstance(response, str):
@@ -160,6 +180,9 @@ class ProcessRequest:
 
             body = response
             response_header = {'Content-Type': 'text/html'}
+
+            log_response(200, request_http.path,
+                         request_http.method, host)
 
             return build_http_message(body, headers=response_header)
 

@@ -11,7 +11,7 @@ from __init__ import __version__
 class SnakeG(RouteHandler):
     def __init__(self, secret_key: bytes) -> None:
         self.thread_limit = 10
-        self._atual_thread = 0
+        self._atual_thread_number = 0
 
         # a chave secreta é utilizada
         # para criptografar cookies e sessões
@@ -20,7 +20,7 @@ class SnakeG(RouteHandler):
         self._process_req = ProcessRequest()
         self._process_req.ROUTES = self._routes
 
-        self._sock_handler = SocketHandler
+        self._sock_handler: SocketHandler = None
 
     def start(self, host: str = '127.0.0.1', port: int = 5500) -> None:
         """Inicia a aplicação no host e
@@ -55,6 +55,7 @@ class SnakeG(RouteHandler):
         print('SnakeG © Firlast - Open Source Project')
         print(f'    @ Server started in \033[1;32mhttp://{host}:{port}\033[m')
         print(f'    @ Version: {__version__}')
+        print(f'Logs:')
 
         try:
             while True:
@@ -69,7 +70,7 @@ class SnakeG(RouteHandler):
                 # quando a condição for falsa, a
                 # requisição será processada normalmente.
 
-                while self._atual_thread == self.thread_limit:
+                while self._atual_thread_number == self.thread_limit:
                     continue
 
                 process_thread = Thread(target=self._process_request,
@@ -89,12 +90,12 @@ class SnakeG(RouteHandler):
         # ProcessRequest.process_request e envia-la
         # ao cliente, fechando a conexão posteriormente.
 
-        self._atual_thread += 1
+        self._atual_thread_number += 1
 
         try:
-            response = self._process_req.process_request(message)
+            response = self._process_req.process_request(message, client_s.getpeername())
             self._sock_handler.send_response(client_s, response)
-            self._atual_thread -= 1
+            self._atual_thread_number -= 1
         except KeyboardInterrupt:
             self._sock_handler.close_server()
             exit()
