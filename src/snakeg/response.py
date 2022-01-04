@@ -28,5 +28,6 @@ class Response:
 
 
 if __name__ == '__main__':
-    test = Response('Hello World!')
+    cookies = {'auth': 'jaedson'}
+    test = Response('Hello World!', cookies=cookies)
     print(test())

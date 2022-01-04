@@ -2,12 +2,17 @@ from _format_http import Formatter
 from exceptions import InvalidHTTPMessage
 import json
 
+from cryptography.fernet import Fernet
+from _environ import get_key
+
+KEY = get_key()
+
 
 def build_http_message(
         body: str,
         status: int = 200,
         headers: dict = None,
-        cookies: dict = None
+        cookies: dict = None,
 ) -> bytes:
     """Constrói uma mensagem HTTP
     com headers, status e body.
@@ -29,9 +34,13 @@ def build_http_message(
     pre_message.append(f'HTTP/1.1 {status}')
     pre_message.append(f'Server: SnakeG')
 
+    fr = Fernet(KEY)
+    headers = headers or {}
+
     if cookies:
         cookies_list = []
         for name, value in cookies.items():
+            value = fr.encrypt(value.encode()).decode()
             cookies_list.append(f'{name}={value}')
 
         headers['Set-Cookie'] = '; '.join(cookies_list)
@@ -68,7 +77,7 @@ class ProcessRequest:
         """
 
         try:
-            request_http = Formatter(request).request_obj
+            request_http = Formatter(request, KEY).request_obj
         except InvalidHTTPMessage:
             return build_http_message('400. Bad Request', 400)
 

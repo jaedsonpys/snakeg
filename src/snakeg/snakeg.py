@@ -3,15 +3,23 @@ from _process_request import ProcessRequest
 from _socket_handler import SocketHandler
 
 from threading import Thread
+from base64 import urlsafe_b64encode
+from _environ import _set_key
+import os
 
 # 4. Criar método para retornar arquivos.
 # 6. Obter parâmetros da URL
 
 
 class SnakeG(RouteHandler):
-    def __init__(self) -> None:
+    def __init__(self, key) -> None:
         self.thread_limit = 10
         self._atual_thread = 0
+
+        # a chave secreta é utilizada
+        # para criptografar cookies e sessões
+        self.key = key
+        _set_key(key)
 
         self._process_req = ProcessRequest()
         self._process_req.ROUTES = self._routes
