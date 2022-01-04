@@ -6,7 +6,7 @@ from cryptography.exceptions import InvalidKey, UnsupportedAlgorithm
 
 
 class Formatter:
-    def __init__(self, http_message: str, key: str):
+    def __init__(self, http_message: str, key: bytes):
         self._lines = http_message.split('\n')
         self.request_obj = Request()
 
@@ -125,7 +125,6 @@ class Formatter:
 if __name__ == '__main__':
     app = Formatter('POST /login?user=jaedson&pid=3949 HTTP/1.1\n'
                     'Host: 127.0.0.1\n'
-                    'Connection: keep-alive\n'
-                    'Cookies: auth=gAAAAABh1IW0nELxt0Via7ezKwEuCckJEwa2WHTIaMd2sFxlcdUr-ZIxRpD_RTW0kPJ8TE17f8upmGJr8Pjrgnv5mZ_RJxU3Uw==', key='PfyVEm3rkC2p4ioeUvNprDiTm6A4OTU3ST5xb35UlEU=')
+                    'Connection: keep-alive\n')
 
     # print(app.request_obj.__dict__['params'])

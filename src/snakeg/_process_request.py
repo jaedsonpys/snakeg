@@ -191,5 +191,8 @@ if __name__ == '__main__':
     header = {'Content-Type': 'text/html',
               'Set-Cookie': 'nd=3434'}
 
-    response = build_http_message('405. Method Not Allowed', 405, headers=header)
-    print(response.decode())
+    # response = build_http_message('405. Method Not Allowed', 405, headers=header)
+    test = ProcessRequest().process_request('POST /login?user=jaedson&pid=3949 HTTP/1.1\n'
+                                            'Host: 127.0.0.1\n'
+                                            'Connection: keep-alive\n', ('0.0.0.0', 0))
+    # print(response.decode())
