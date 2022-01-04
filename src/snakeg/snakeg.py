@@ -5,16 +5,17 @@ from _socket_handler import SocketHandler
 from threading import Thread
 from _environ import set_key
 
+from __init__ import __version__
+
 
 class SnakeG(RouteHandler):
-    def __init__(self, key) -> None:
+    def __init__(self, secret_key: bytes) -> None:
         self.thread_limit = 10
         self._atual_thread = 0
 
         # a chave secreta é utilizada
         # para criptografar cookies e sessões
-        self.key = key
-        set_key(key)
+        set_key(secret_key)
 
         self._process_req = ProcessRequest()
         self._process_req.ROUTES = self._routes
@@ -50,6 +51,10 @@ class SnakeG(RouteHandler):
         """
 
         self._sock_handler = SocketHandler(host, port)
+
+        print('SnakeG © Firlast - Open Source Project')
+        print(f'    @ Server started in \033[1;32mhttp://{host}:{port}\033[m')
+        print(f'    @ Version: {__version__}')
 
         try:
             while True:
@@ -96,7 +101,10 @@ class SnakeG(RouteHandler):
 
 
 if __name__ == '__main__':
-    app = SnakeG()
+    from os import urandom
+
+    key = urandom(32)
+    app = SnakeG(key)
 
     def get_user():
         return {'name': 'Jaedson', 'age': 14}

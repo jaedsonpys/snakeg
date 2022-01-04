@@ -1,5 +1,9 @@
-def set_key(key: str):
+from base64 import urlsafe_b64encode
+
+
+def set_key(key: bytes):
     with open('.env', 'w') as env_file:
+        key = urlsafe_b64encode(key)
         env_file.write(f'SNKEY={key}')
 
 
