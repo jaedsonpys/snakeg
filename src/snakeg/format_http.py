@@ -1,5 +1,5 @@
-from exceptions import InvalidHTTPMessage
-from _request import Request
+from .exceptions import InvalidHTTPMessage
+from .request import Request
 
 from cryptography.fernet import Fernet
 from cryptography.exceptions import InvalidKey, UnsupportedAlgorithm

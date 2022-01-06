@@ -2,7 +2,7 @@ class RouteHandler:
     _routes = {}
 
     @classmethod
-    def add_route(cls, func, path: str, methods: list) -> None:
+    def add_route(cls, path: str, func, methods: list) -> None:
         """Adiciona uma nova rota a
         aplicação::
 

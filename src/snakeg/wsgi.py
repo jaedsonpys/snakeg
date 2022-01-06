@@ -1,11 +1,11 @@
-from _route_handler import RouteHandler
-from _process_request import ProcessRequest
-from _socket_handler import SocketHandler
+from .route_handler import RouteHandler
+from .process_request import ProcessRequest
+from .socket_handler import SocketHandler
+
+from .environ import set_key
+from .__init__ import __version__
 
 from threading import Thread
-from _environ import set_key
-
-from __init__ import __version__
 
 
 class SnakeG(RouteHandler):

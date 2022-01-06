@@ -1,11 +1,11 @@
-from _format_http import Formatter
-from exceptions import InvalidHTTPMessage
+from .format_http import Formatter
+from .exceptions import InvalidHTTPMessage
 import json
 
 from cryptography.fernet import Fernet
-from _environ import get_key
+from .environ import get_key
 
-KEY = get_key()
+KEY = get_key
 
 
 def log_response(
@@ -41,7 +41,7 @@ def build_http_message(
     pre_message.append(f'HTTP/1.1 {status}')
     pre_message.append(f'Server: SnakeG')
 
-    fr = Fernet(KEY)
+    fr = Fernet(KEY())
     headers = headers or {}
 
     if cookies:
@@ -85,7 +85,7 @@ class ProcessRequest:
         """
 
         try:
-            request_http = Formatter(request, KEY).request_obj
+            request_http = Formatter(request, KEY()).request_obj
         except InvalidHTTPMessage:
             return build_http_message('400. Bad Request', 400)
 
@@ -128,9 +128,9 @@ class ProcessRequest:
         call_function = route_info.get('call')
 
         try:
-            response = call_function(request_http)
-        except TypeError:
             response = call_function()
+        except TypeError as error:
+            response = call_function(request_http)
 
         # verificando tipo do retorno de call_function
 
@@ -156,7 +156,7 @@ class ProcessRequest:
 
             return build_http_message(body, status=status, headers=response_header)
 
-        elif isinstance(response, dict):
+        elif isinstance(response, dict) or isinstance(response, list):
             # se a resposta da função for apenas
             # um dicionário, sabemos que não
             # há um status especificado,
