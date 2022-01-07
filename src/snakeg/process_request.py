@@ -138,7 +138,7 @@ class ProcessRequest:
 
         # verificando tipo do retorno de call_function
 
-        if isinstance(response, object):
+        if isinstance(response, object) and not isinstance(response, dict):
             return response()
         elif isinstance(response, tuple):
             # se a resposta da função for uma
