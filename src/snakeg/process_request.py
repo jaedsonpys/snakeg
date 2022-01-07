@@ -5,8 +5,6 @@ import json
 from cryptography.fernet import Fernet
 from .environ import get_key
 
-from .response import Response
-
 KEY = get_key
 
 
@@ -65,6 +63,10 @@ def build_http_message(
     # definindo o body
     if body:
         pre_message.append('')
+
+        if isinstance(body, dict) or isinstance(body, list):
+            body = json.dumps(body)
+
         pre_message.append(body)
 
     http_response_message = '\n'.join(pre_message)
@@ -136,7 +138,7 @@ class ProcessRequest:
 
         # verificando tipo do retorno de call_function
 
-        if isinstance(response, Response):
+        if isinstance(response, object):
             return response()
         elif isinstance(response, tuple):
             # se a resposta da função for uma
