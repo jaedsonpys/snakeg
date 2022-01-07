@@ -5,6 +5,8 @@ import json
 from cryptography.fernet import Fernet
 from .environ import get_key
 
+from .response import Response
+
 KEY = get_key
 
 
@@ -129,12 +131,14 @@ class ProcessRequest:
 
         try:
             response = call_function()
-        except TypeError as error:
+        except TypeError:
             response = call_function(request_http)
 
         # verificando tipo do retorno de call_function
 
-        if isinstance(response, tuple):
+        if isinstance(response, Response):
+            return response()
+        elif isinstance(response, tuple):
             # se a resposta da função for uma
             # tupla, é esperado que o primeiro
             # elemento seja a resposta, e o segundo
